@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 __author__ = 'huposeya'
-#单页文章的下载，以标题.pdf的形式保存
+# 单页文章的下载，以标题.pdf的形式保存
 
 import requests
 from bs4 import BeautifulSoup
@@ -9,9 +9,10 @@ class papercrawler:
     def __init__(self, url):
         self.url = url
 
-    #获取网页源码
-    def getsoup(self):
+
+    def get_basic_info(self):
         try:
+            print 'requesting %s' % self.url
             response = requests.get(self.url)
         except requests.HTTPError as e:
             if hasattr(e, 'reason'):
@@ -20,32 +21,23 @@ class papercrawler:
                 print('连接失败, 未知原因')
             return None
 
-        self.soup = BeautifulSoup(response.text, 'html.parser')
-        return self.soup
+        soup = BeautifulSoup(response.text, 'html.parser')
 
-    #获取title
-    def gettitle(self):
-        soup = self.soup
         titledata = soup.select('meta[name="citation_title"]')
-        title = titledata[0]['content']
-        print('title: %s' % titledata[0]['content'])
-        return title
+        self.title = titledata[0]['content']
 
-    #获取下载链接
-    def geturl(self):
-        soup = self.soup
         urlpagedata = soup.select('meta[name="citation_pdf_url"]')
-        urlpage = urlpagedata[0]['content']
-        print(urlpagedata[0]['content'])
-        return urlpage
+        self.pdf_url = urlpagedata[0]['content']
 
-    #下载pdf到本地
+        return soup
+
+    # 下载pdf到本地
     def downloadpdf(self):
-        self.getsoup()
-        title = self.gettitle()
-        urlpage = self.geturl()
-        responsepage = requests.get(urlpage)
-        pdfname = str(title) + '.pdf'
+        self.get_basic_info()
+
+        responsepage = requests.get(self.pdf_url)
+
+        pdfname = str(self.title) + '.pdf'
         with open(pdfname, 'wb') as f:
             f.write(responsepage.content)
 
