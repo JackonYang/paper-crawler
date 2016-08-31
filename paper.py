@@ -46,10 +46,11 @@ class papercrawler:
             f.write(responsepage.content)
 
 
-def main():
-    paper = papercrawler('http://arxiv.org/abs/1608.07531')
+def main(url):
+    paper = papercrawler(url)
     paper.downloadpdf()
 
 
 if __name__ == '__main__':
-    main()
+    url = 'http://arxiv.org/abs/1608.07531'
+    main(url)
