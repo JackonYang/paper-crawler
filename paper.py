@@ -13,24 +13,27 @@ class papercrawler:
     def getsoup(self):
         try:
             response = requests.get(self.url)
-            soup = BeautifulSoup(response.text, 'html.parser')
-            return soup
         except requests.HTTPError as e:
             if hasattr(e, 'reason'):
                 print('连接失败,错误原因', e.reason)
-                return None
+            else:
+                print('连接失败, 未知原因')
+            return None
+
+        self.soup = BeautifulSoup(response.text, 'html.parser')
+        return self.soup
 
     #获取title
     def gettitle(self):
-        soup = self.getsoup()
+        soup = self.soup
         titledata = soup.select('meta[name="citation_title"]')
         title = titledata[0]['content']
-        print(titledata[0]['content'])
+        print('title: %s' % titledata[0]['content'])
         return title
 
     #获取下载链接
     def geturl(self):
-        soup = self.getsoup()
+        soup = self.soup
         urlpagedata = soup.select('meta[name="citation_pdf_url"]')
         urlpage = urlpagedata[0]['content']
         print(urlpagedata[0]['content'])
@@ -38,6 +41,7 @@ class papercrawler:
 
     #下载pdf到本地
     def downloadpdf(self):
+        self.getsoup()
         title = self.gettitle()
         urlpage = self.geturl()
         responsepage = requests.get(urlpage)
