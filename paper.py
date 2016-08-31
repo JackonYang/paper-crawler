@@ -45,5 +45,11 @@ class papercrawler:
         with open(pdfname, 'wb') as f:
             f.write(responsepage.content)
 
-paper = papercrawler('http://arxiv.org/abs/1608.07531')
-paper.downloadpdf()
+
+def main():
+    paper = papercrawler('http://arxiv.org/abs/1608.07531')
+    paper.downloadpdf()
+
+
+if __name__ == '__main__':
+    main()
